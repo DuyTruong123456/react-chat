@@ -51,7 +51,9 @@ export default function Test() {
             {messageList.map(item => {
               return (
                 <>
-                  <Speech text="ngủ" lang="vi-VN" />
+                  {item.sender === 'Bot' && (
+                    <Speech text={item?.message} lang="vi-VN" />
+                  )}
                   <Message
                     model={{
                       message: item?.message,
