@@ -1,46 +1,57 @@
-import { useState } from "react";
-import "./App.css";
-import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+import {useState} from 'react';
+import './App.css';
+import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import {
   MainContainer,
   ChatContainer,
   MessageList,
   Message,
   MessageInput,
-} from "@chatscope/chat-ui-kit-react";
-import axios from "axios";
-import Speech from "react-speech";
+} from '@chatscope/chat-ui-kit-react';
+import axios from 'axios';
+import Speech from 'react-speech';
+import {enableAutoTTS} from 'enable-auto-tts';
+enableAutoTTS();
+import {useSpeechRecognition} from 'react-speech-kit';
 export default function Test() {
-  const [text, setText] = useState("");
+  const [text, setText] = useState('');
   const [messageList, setMessageList] = useState([]);
+  const {listen, stop} = useSpeechRecognition({
+    onResult: result => {
+      setText(result);
+    },
+  });
   async function getAnswer(test) {
     try {
       const res = await axios.get(
-        `http://lpnserver.net:51087/test2?c=${test}?`
+        `http://lpnserver.net:51087/test2?c=${test}?`,
       );
       console.log(res.data);
       setTimeout(async () => {
-        setMessageList((messageList) => [
+        setMessageList(messageList => [
           ...messageList,
-          { message: res.data, sender: "Bot", direction: 0 },
+          {message: res.data, sender: 'Bot', direction: 0},
         ]);
       }, 2000);
     } catch (error) {
-      console.error("Create record error", error);
+      console.error('Create record error', error);
     }
   }
   return (
-    <div style={{ position: "relative", height: "500px" }}>
+    <div style={{position: 'relative', height: '700px'}}>
+      <button
+        style={{position: 'absolute', zIndex: 100}}
+        onMouseDown={listen}
+        onMouseUp={stop}>
+        🎤
+      </button>
       <MainContainer>
-        <ChatContainer
-          onClick={() => {
-            console.log("hi");
-          }}
-        >
+        <ChatContainer>
           <MessageList>
-            {messageList.map((item) => {
+            {messageList.map(item => {
               return (
                 <>
+                  <Speech text="ngủ" lang="vi-VN" />
                   <Message
                     model={{
                       message: item?.message,
@@ -52,22 +63,24 @@ export default function Test() {
               );
             })}
           </MessageList>
+
           <MessageInput
             value={text}
-            onChange={(text) => {
+            onChange={text => {
               setText(text);
             }}
             placeholder="Type message here"
             onSend={() => {
-              setMessageList((messageList) => [
+              setMessageList(messageList => [
                 ...messageList,
-                { message: text, sender: "You", direction: 1 },
+                {message: text, sender: 'You', direction: 1},
               ]);
 
               getAnswer(text);
 
-              setText("");
+              setText('');
             }}
+            attachButton={false}
           />
         </ChatContainer>
       </MainContainer>
