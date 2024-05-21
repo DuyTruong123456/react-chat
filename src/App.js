@@ -14,8 +14,14 @@ import {enableAutoTTS} from 'enable-auto-tts';
 enableAutoTTS();
 import {useSpeechRecognition} from 'react-speech-kit';
 export default function Test() {
+  let audio = new Audio('/tmp/hello.mp3');
+  const start = () => {
+    audio.play();
+  };
   const [text, setText] = useState('');
-  const [messageList, setMessageList] = useState([]);
+  const [messageList, setMessageList] = useState([
+    {message: 'Hello, How can i help you?', sender: 'Bot', direction: 0},
+  ]);
   const {listen, stop} = useSpeechRecognition({
     onResult: result => {
       setText(result);
@@ -27,24 +33,24 @@ export default function Test() {
         `http://lpnserver.net:51087/test2?c=${test}?`,
       );
       console.log(res.data);
-      setTimeout(async () => {
-        setMessageList(messageList => [
-          ...messageList,
-          {message: res.data, sender: 'Bot', direction: 0},
-        ]);
-      }, 2000);
+      setMessageList(messageList => [
+        ...messageList,
+        {message: res.data, sender: 'Bot', direction: 0},
+      ]);
     } catch (error) {
       console.error('Create record error', error);
     }
   }
   return (
     <div style={{position: 'relative', height: '700px'}}>
-      <button
-        style={{position: 'absolute', zIndex: 100}}
-        onMouseDown={listen}
-        onMouseUp={stop}>
-        🎤
-      </button>
+      {false && (
+        <button
+          style={{position: 'absolute', zIndex: 100}}
+          onMouseDown={listen}
+          onMouseUp={stop}>
+          🎤
+        </button>
+      )}
       <MainContainer>
         <ChatContainer>
           <MessageList>
@@ -52,7 +58,9 @@ export default function Test() {
               return (
                 <>
                   {item.sender === 'Bot' && (
-                    <Speech text={item?.message} lang="vi-VN" />
+                    //<Speech text={item?.message} lang="vi-VN" />
+                    //<button onClick={start}>Play</button>
+                    <></>
                   )}
                   <Message
                     model={{
