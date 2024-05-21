@@ -1,6 +1,4 @@
 import React, {useEffect, useRef, useState} from 'react';
-import './App.css';
-import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import {
   MainContainer,
   ChatContainer,
@@ -61,6 +59,7 @@ export default function Test() {
       console.error(error);
     }
   };
+  const [passingText, setPassingText] = useState('');
   const [text, setText] = useState('');
   const [messageList, setMessageList] = useState([
     {message: 'Hello, How can i help you?', sender: 'Bot', direction: 0},
@@ -78,9 +77,10 @@ export default function Test() {
   async function getAnswer(test) {
     try {
       const res = await axios.get(
-        `http://lpnserver.net:51087/test2?c=${test}?`,
+        `http://lpnserver.net:51087/test2?c=${passingText + test}?`,
       );
       console.log(res.data);
+      setPassingText(passingText + test);
       setMessageList(messageList => [
         ...messageList,
         {message: res.data, sender: 'Bot', direction: 0},
